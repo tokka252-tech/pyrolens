@@ -1,0 +1,10 @@
+node_modules/
+dist/
+
+# Python pipeline environment & intermediates (regenerable)
+raw/.venv/
+raw/output/
+raw/harmonized_fires_export.json
+
+*.log
+.DS_Store
