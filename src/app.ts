@@ -124,6 +124,7 @@ export async function initApp(): Promise<void> {
     anomalies: dataset.anomalies,
     climatology: dataset.climatology,
     onPeriodSelect: (sel) => {
+      exitLiveView();
       if (sel) {
         const { from, to } = monthBounds(sel.year, sel.month);
         sidebar.setDateRange(from, to); // silent: no onChange emission
@@ -156,7 +157,59 @@ export async function initApp(): Promise<void> {
     btn.addEventListener('click', () => setBasemap(btn.dataset.mode as BasemapMode));
   }
 
-  // ---- Live refresh + freshness monitor --------------------------------------
+  // ---- Live mode -------------------------------------------------------------
+  // Toggles the map to a rolling window of the most recent detections instead
+  // of the full historical archive. The choice persists across the auto-
+  // refresh reloads via sessionStorage, and the window re-anchors to the
+  // newest acq_date whenever fresher FIRMS data arrives.
+  const liveBtn = $('live-btn');
+  const LIVE_WINDOW_DAYS = 14;
+  let liveMode = false;
+
+  const paintLiveBtn = () => {
+    liveBtn.classList.toggle('bg-amber-500', liveMode);
+    liveBtn.classList.toggle('text-slate-950', liveMode);
+    liveBtn.classList.toggle('bg-amber-500/10', !liveMode);
+    liveBtn.classList.toggle('text-amber-300', !liveMode);
+    liveBtn.title = liveMode
+      ? `Live view: last ${LIVE_WINDOW_DAYS} days — click to show the full archive`
+      : `Show only the latest ${LIVE_WINDOW_DAYS} days of detections`;
+  };
+
+  const latestAcqDate = () =>
+    dataset.detections.reduce((m, d) => (d.acqDate > m ? d.acqDate : m), '');
+
+  // Heatmap-driven date changes exit live view (dates belong to the cell now).
+  const exitLiveView = () => {
+    if (!liveMode) return;
+    liveMode = false;
+    sessionStorage.setItem('pyresync:live', '0');
+    paintLiveBtn();
+  };
+
+  const setLiveMode = (on: boolean) => {
+    liveMode = on;
+    sessionStorage.setItem('pyresync:live', on ? '1' : '0');
+    paintLiveBtn();
+    if (on) {
+      const latest = latestAcqDate();
+      const from = new Date(`${latest}T00:00:00Z`);
+      from.setUTCDate(from.getUTCDate() - (LIVE_WINDOW_DAYS - 1));
+      sidebar.setDateRange(from.toISOString().slice(0, 10), latest);
+    } else {
+      sidebar.setDateRange(dateRange.min, dateRange.max);
+    }
+    filters = sidebar.getFilters();
+    clearPeriod();
+    applyFilters();
+  };
+
+  liveBtn.addEventListener('click', () => {
+    setLiveMode(!liveMode);
+    void checkForUpdate();
+  });
+
+  // ---- Freshness monitor -----------------------------------------------------
   // status.json is a tiny manifest the hourly FIRMS Action rewrites whenever
   // the products change. We poll it silently; when its data_generated_at no
   // longer matches what we loaded, we reload with a cache-busting timestamp.
@@ -171,13 +224,9 @@ export async function initApp(): Promise<void> {
       : `data updated ${d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
   };
 
-  const checkForUpdate = async (manual = false) => {
+  const checkForUpdate = async () => {
     const status = await loadStatus(String(Date.now()));
-    if (!status) {
-      // No manifest yet (or offline) — a manual click still forces a reload.
-      if (manual) location.search = `?t=${Date.now()}`;
-      return;
-    }
+    if (!status) return;
     syncStatusEl.textContent = fmtSync(status.data_generated_at);
     syncStatusEl.classList.remove('hidden');
     if (
@@ -187,20 +236,14 @@ export async function initApp(): Promise<void> {
     ) {
       // New detections were published — reload to pick them up.
       location.search = `?t=${Date.now()}`;
-    } else if (manual) {
-      // Manual check with nothing new: still reload so tiles/JSON refresh.
-      location.search = `?t=${Date.now()}`;
     }
   };
-
-  $('live-btn').addEventListener('click', () => {
-    $('live-btn').classList.add('opacity-60');
-    void checkForUpdate(true);
-  });
 
   // Silent poll every 10 minutes — cheap (status.json is <1 KB).
   window.setInterval(() => void checkForUpdate(), 10 * 60 * 1000);
 
-  // Initial paint.
+  // Initial paint — restore live mode if it was active before a refresh.
+  paintLiveBtn();
   applyFilters();
+  if (sessionStorage.getItem('pyresync:live') === '1') setLiveMode(true);
 }
