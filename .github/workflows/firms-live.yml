@@ -45,11 +45,23 @@ jobs:
           FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
         run: |
           node scripts/update-live.mjs
-          if git diff --quiet -- public/data; then
+          if git diff --quiet -- public/data/hotspots.geojson public/data/calendar.json public/data/anomalies.json public/data/status.json; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      # Persist merged detections back to master — the FIRMS window only covers
+      # the last ~2 days, so without this commit each run would rebuild from
+      # the stale committed file and older live detections would be lost.
+      - name: Commit updated data to master
+        if: steps.firms.outputs.changed == 'true'
+        run: |
+          git config user.name "pyresync-bot"
+          git config user.email "pyresync-bot@users.noreply.github.com"
+          git add public/data
+          git commit -m "Update FIRMS NRT detections"
+          git push
 
       - name: Build site
         if: steps.firms.outputs.changed == 'true'

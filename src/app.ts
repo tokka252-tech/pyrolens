@@ -15,6 +15,7 @@ import {
   datasetDateRange,
   filterDetections,
   loadDataset,
+  loadStatus,
   type PyreFilters,
 } from './data/adapter';
 import type { PyreDataset } from './types';
@@ -155,12 +156,50 @@ export async function initApp(): Promise<void> {
     btn.addEventListener('click', () => setBasemap(btn.dataset.mode as BasemapMode));
   }
 
-  // ---- Live refresh ----------------------------------------------------------
-  // Reloads the page with a cache-busting timestamp so the adapter re-fetches
-  // the three JSON products (which the scheduled FIRMS updater regenerates).
+  // ---- Live refresh + freshness monitor --------------------------------------
+  // status.json is a tiny manifest the hourly FIRMS Action rewrites whenever
+  // the products change. We poll it silently; when its data_generated_at no
+  // longer matches what we loaded, we reload with a cache-busting timestamp.
+  const syncStatusEl = $('sync-status');
+  const loadedGeneratedAt = dataset.meta.generatedAt;
+
+  const fmtSync = (iso: string | undefined) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime())
+      ? ''
+      : `data updated ${d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
+  };
+
+  const checkForUpdate = async (manual = false) => {
+    const status = await loadStatus(String(Date.now()));
+    if (!status) {
+      // No manifest yet (or offline) — a manual click still forces a reload.
+      if (manual) location.search = `?t=${Date.now()}`;
+      return;
+    }
+    syncStatusEl.textContent = fmtSync(status.data_generated_at);
+    syncStatusEl.classList.remove('hidden');
+    if (
+      status.data_generated_at &&
+      loadedGeneratedAt &&
+      status.data_generated_at !== loadedGeneratedAt
+    ) {
+      // New detections were published — reload to pick them up.
+      location.search = `?t=${Date.now()}`;
+    } else if (manual) {
+      // Manual check with nothing new: still reload so tiles/JSON refresh.
+      location.search = `?t=${Date.now()}`;
+    }
+  };
+
   $('live-btn').addEventListener('click', () => {
-    location.search = `?t=${Date.now()}`;
+    $('live-btn').classList.add('opacity-60');
+    void checkForUpdate(true);
   });
+
+  // Silent poll every 10 minutes — cheap (status.json is <1 KB).
+  window.setInterval(() => void checkForUpdate(), 10 * 60 * 1000);
 
   // Initial paint.
   applyFilters();

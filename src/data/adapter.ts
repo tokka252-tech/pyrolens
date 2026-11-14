@@ -231,6 +231,29 @@ export async function loadDataset(cacheBust?: string): Promise<PyreDataset> {
   };
 }
 
+/** Freshness manifest written by scripts/update-live.mjs on each data update. */
+export interface DataStatus {
+  data_generated_at: string;
+  detections: number;
+  latest_acq_date: string;
+}
+
+/**
+ * Poll the tiny status manifest (a few hundred bytes) used by the app's
+ * auto-refresh monitor. Returns null when the file doesn't exist yet or the
+ * request fails — callers should treat that as "no update information".
+ */
+export async function loadStatus(cacheBust?: string): Promise<DataStatus | null> {
+  try {
+    const suffix = cacheBust ? `?t=${encodeURIComponent(cacheBust)}` : '';
+    const res = await fetch(`${DATA_BASE}/status.json${suffix}`);
+    if (!res.ok) return null;
+    return (await res.json()) as DataStatus;
+  } catch {
+    return null;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Filter model + pure query helper
 // ---------------------------------------------------------------------------

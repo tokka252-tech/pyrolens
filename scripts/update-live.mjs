@@ -185,6 +185,14 @@ async function main() {
   write('hotspots.geojson', hotspotsGeoJson);
   write('calendar.json', calendar);
   write('anomalies.json', anomalies);
+  // Tiny freshness manifest polled by the web app's auto-refresh monitor.
+  // data_generated_at must equal hotspots.metadata.generated_at exactly —
+  // the client compares it against the timestamp it loaded at startup.
+  write('status.json', {
+    data_generated_at: hotspotsGeoJson.metadata.generated_at,
+    detections: all.length,
+    latest_acq_date: all[all.length - 1].acq_date,
+  });
   console.log(`Total detections: ${all.length}`);
 }
 
