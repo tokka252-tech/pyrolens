@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PyreSync — Active Fire Intelligence · Nile Delta</title>
+    <script type="module" crossorigin src="./assets/index-CVpG6Ctc.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DP5flTB3.css">
+  </head>
+  <body>
+    <div id="app" class="flex h-screen flex-col bg-[#0b1120] text-slate-200">
+      <!-- ======================= Header ======================= -->
+      <header
+        class="flex h-14 shrink-0 items-center justify-between border-b border-slate-800 bg-[#0d1526] px-4"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-8 w-8 items-center justify-center rounded-md bg-amber-500 text-sm font-black text-slate-950"
+          >
+            P
+          </div>
+          <div>
+            <h1 class="text-sm font-bold tracking-wide text-slate-100">PyreSync</h1>
+            <p class="text-[10px] uppercase tracking-[0.18em] text-slate-500">
+              Active Fire Intelligence · Nile Delta
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="hidden items-center gap-3 text-[11px] text-slate-400 md:flex">
+            <span>
+              <span id="stat-detections" class="font-semibold tabular-nums text-slate-200">—</span>
+              detections
+            </span>
+            <span class="text-slate-700">|</span>
+            <span>
+              <span id="stat-years" class="font-semibold tabular-nums text-slate-200">—</span>
+              years
+            </span>
+          </div>
+
+          <!-- Basemap toggle -->
+          <div
+            id="basemap-toggle"
+            class="flex rounded-md border border-slate-700 bg-slate-900 p-0.5 text-xs"
+          >
+            <button
+              type="button"
+              data-mode="dark"
+              class="basemap-btn rounded px-3 py-1 font-medium bg-amber-500 text-slate-950"
+            >
+              Dark Scientific
+            </button>
+            <button
+              type="button"
+              data-mode="satellite"
+              class="basemap-btn rounded px-3 py-1 font-medium text-slate-400 hover:text-slate-200"
+            >
+              Satellite Imagery
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- ======================= Body ======================= -->
+      <div class="flex min-h-0 flex-1">
+        <!-- Sidebar (populated by src/ui/sidebar.ts) -->
+        <aside
+          id="sidebar"
+          class="flex h-full w-72 shrink-0 flex-col overflow-y-auto border-r border-slate-800 bg-[#0d1526]"
+        ></aside>
+
+        <!-- Main column -->
+        <main class="flex min-w-0 flex-1 flex-col">
+          <!-- Map canvas -->
+          <div id="map-wrap" class="relative min-h-0 flex-1">
+            <div id="map" class="h-full w-full"></div>
+
+            <!-- Loading / error overlay -->
+            <div
+              id="map-status"
+              class="absolute inset-0 z-[600] flex items-center justify-center bg-[#0b1120]"
+            >
+              <div id="map-status-inner" class="text-sm text-slate-500">
+                Loading PyreSync data…
+              </div>
+            </div>
+
+            <!-- Basemap fallback / error notice -->
+            <div
+              id="basemap-notice"
+              class="pointer-events-none absolute right-3 top-3 z-[500] hidden rounded-md border border-sky-500/40 bg-[#0d1526]/90 px-3 py-1.5 text-xs text-sky-300 backdrop-blur"
+            ></div>
+
+            <!-- Active period badge -->
+            <div
+              id="period-badge"
+              class="pointer-events-none absolute left-3 top-3 z-[500] hidden rounded-md border border-amber-500/40 bg-[#0d1526]/90 px-3 py-1.5 text-xs text-amber-300 backdrop-blur"
+            >
+              Period filter: <span id="period-label" class="font-semibold"></span>
+              — click the heatmap cell again or “Clear period filter” to reset
+            </div>
+          </div>
+
+          <!-- Anomaly heatmap (populated by src/ui/heatmap.ts) -->
+          <!-- shrinkable: compresses on short viewports so the map keeps space -->
+          <div
+            id="heatmap"
+            class="h-[300px] min-h-[140px] shrink border-t border-slate-800 bg-[#0d1526]"
+          ></div>
+        </main>
+      </div>
+    </div>
+
+  </body>
+</html>
