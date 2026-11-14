@@ -1,0 +1,64 @@
+name: FIRMS Live Update
+
+# Hourly near-real-time refresh: pulls the latest MODIS + VIIRS S-NPP
+# detections for the Nile Delta from NASA FIRMS, merges them into
+# public/data/*.json, rebuilds the site, and republishes GitHub Pages.
+#
+# Requires repository secret: FIRMS_MAP_KEY
+# (free key: https://firms.modaps.eosdis.nasa.gov/api/)
+#
+# "Live" = latest available orbital pass. Polar-orbiting sensors overfly the
+# AOI ~every 12h per instrument and FIRMS publishes NRT products with ~1-3h
+# latency — this is not instantaneous detection.
+
+on:
+  schedule:
+    - cron: '23 * * * *' # hourly at :23 UTC
+  workflow_dispatch: # manual "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: firms-live
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch latest FIRMS detections
+        id: firms
+        env:
+          FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
+        run: |
+          node scripts/update-live.mjs
+          if git diff --quiet -- public/data; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build site
+        if: steps.firms.outputs.changed == 'true'
+        run: npm run build
+
+      - name: Publish to GitHub Pages
+        if: steps.firms.outputs.changed == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          keep_files: false

@@ -165,11 +165,13 @@ async function fetchJson<T>(url: string): Promise<T> {
  * Throws if any product fails to load — callers should surface a data-error
  * state rather than rendering partial data.
  */
-export async function loadDataset(): Promise<PyreDataset> {
+export async function loadDataset(cacheBust?: string): Promise<PyreDataset> {
+  // `?t=` busts CDN/browser cache so the Live button always gets fresh JSON.
+  const suffix = cacheBust ? `?t=${encodeURIComponent(cacheBust)}` : '';
   const [hotspots, calendar, anomalies] = await Promise.all([
-    fetchJson<{ features: RawGeoJsonFeature[]; metadata?: { disclaimer?: string; synthetic?: boolean; generated_at?: string } }>(URLS.hotspots),
-    fetchJson<RawCalendar>(URLS.calendar),
-    fetchJson<RawAnomalies>(URLS.anomalies),
+    fetchJson<{ features: RawGeoJsonFeature[]; metadata?: { disclaimer?: string; synthetic?: boolean; generated_at?: string } }>(`${URLS.hotspots}${suffix}`),
+    fetchJson<RawCalendar>(`${URLS.calendar}${suffix}`),
+    fetchJson<RawAnomalies>(`${URLS.anomalies}${suffix}`),
   ]);
 
   const detections = hotspots.features.map(normalizeDetection);

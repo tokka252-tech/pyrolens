@@ -46,9 +46,12 @@ export async function initApp(): Promise<void> {
   const statYears = $('stat-years');
 
   // ---- Load dataset ---------------------------------------------------------
+  // `?t=` (set by the Live button) forces a cache-busted refetch of the JSON.
+  const cacheBust = new URLSearchParams(location.search).get('t') ?? undefined;
   let dataset: PyreDataset;
   try {
-    dataset = await loadDataset();
+    dataset = await loadDataset(cacheBust);
+    if (cacheBust) history.replaceState(null, '', location.pathname);
   } catch (err) {
     statusInner.textContent = `Data load failed: ${err instanceof Error ? err.message : String(err)}`;
     statusInner.className = 'max-w-md rounded-lg border border-red-900/60 bg-red-950/30 p-6 text-center text-sm text-red-300';
@@ -151,6 +154,13 @@ export async function initApp(): Promise<void> {
   for (const btn of basemapButtons) {
     btn.addEventListener('click', () => setBasemap(btn.dataset.mode as BasemapMode));
   }
+
+  // ---- Live refresh ----------------------------------------------------------
+  // Reloads the page with a cache-busting timestamp so the adapter re-fetches
+  // the three JSON products (which the scheduled FIRMS updater regenerates).
+  $('live-btn').addEventListener('click', () => {
+    location.search = `?t=${Date.now()}`;
+  });
 
   // Initial paint.
   applyFilters();

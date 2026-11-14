@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "import": "node scripts/import-harmonized.mjs",
+    "update:live": "node scripts/update-live.mjs",
     "data:demo": "node scripts/generate-demo-data.mjs"
   },
   "dependencies": {
