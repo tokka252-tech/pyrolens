@@ -87,7 +87,6 @@ function buildPopupHtml(d: FireDetection): string {
 export interface MapHandle {
   setBasemap(mode: BasemapMode): void;
   setDetections(detections: FireDetection[]): void;
-  destroy(): void;
 }
 
 interface ModeLayers {
@@ -232,10 +231,6 @@ export function initMap(
           .bindPopup(buildPopupHtml(d), { maxWidth: 280 })
           .addTo(layer);
       }
-    },
-
-    destroy() {
-      map.remove();
     },
   };
 }

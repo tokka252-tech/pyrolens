@@ -180,7 +180,7 @@ raw.forEach((rec0, idx) => {
     acq_datetime_utc: iso,
     latitude: Number(lat.toFixed(5)),
     longitude: Number(lon.toFixed(5)),
-    confidence: confRaw ?? confidenceCategory(confRaw),
+    confidence: confRaw ?? 'nominal',
     confidence_category: confidenceCategory(confRaw),
     frp: Math.round(frp * 10) / 10,
     brightness: undefined,
@@ -201,7 +201,7 @@ if (genericSatCount > 0) {
 // Products: hotspots.geojson + calendar.json + anomalies.json
 // ---------------------------------------------------------------------------
 const { hotspotsGeoJson, calendar, anomalies } = buildAllProducts(detections, {
-  sourceFile: inputPath,
+  sourceFile: inputPath.split(/[\\/]/).pop(),
 });
 
 mkdirSync(OUT, { recursive: true });

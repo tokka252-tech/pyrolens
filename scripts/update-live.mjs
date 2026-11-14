@@ -26,7 +26,6 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseCsv } from './lib/util.mjs';
 import {
-  ALL_SATELLITES,
   SAT_INSTRUMENT,
   SAT_LABEL,
   buildAllProducts,

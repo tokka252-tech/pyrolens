@@ -259,7 +259,6 @@ const anomalies = {
   cells: {},
 };
 
-const Z_THRESHOLD = 3.5 * 1.4826; // scaled MAD -> approx sigma
 for (const cell of Object.values(calendar.cells)) {
   const c = climatology[cell.month];
   const denom = 1.4826 * c.mad;

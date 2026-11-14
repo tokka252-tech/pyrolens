@@ -33,8 +33,13 @@ raw/                   Pipeline inputs & intermediates (NOT served):
   output/              Pipeline outputs (monthly stats, merged parquet)
   harmonized_fires_export.json   Parquet → JSON export consumed by the importer
 scripts/
-  generate-demo-data.mjs    Synthetic demo data generator (regenerates the 3 products)
-  import-harmonized.mjs     Import harmonized JSON/CSV → the 3 adapter products
+  lib/util.mjs               Shared helpers (CSV parser, median/MAD)
+  lib/products.mjs           Shared product builders (geojson/calendar/anomalies)
+  generate-demo-data.mjs     Synthetic demo data generator (regenerates the 3 products)
+  import-harmonized.mjs      Import harmonized JSON/CSV → the 3 adapter products
+  update-live.mjs            Fetch FIRMS NRT detections → merge → rebuild products
+.github/workflows/
+  firms-live.yml             Hourly GitHub Action: FIRMS fetch → rebuild → publish Pages
 ```
 
 ## Data pipeline
@@ -62,10 +67,27 @@ weights the calendar/anomaly aggregates.
 `npm run data:demo` regenerates synthetic demo data if the real pipeline
 output is unavailable.
 
+## Live FIRMS updates
+
+`.github/workflows/firms-live.yml` runs hourly: `scripts/update-live.mjs`
+pulls the latest MODIS + VIIRS S-NPP near-real-time detections for the Nile
+Delta bbox from the NASA FIRMS area API, merges them into
+`public/data/hotspots.geojson` (deduplicated), rebuilds all three products,
+and republishes GitHub Pages — but only when new detections exist.
+
+Setup: add a `FIRMS_MAP_KEY` repository secret (free key from
+<https://firms.modaps.eosdis.nasa.gov/api/>). The **Live** button in the app
+header reloads the published JSON products with a cache-busting timestamp.
+
+NRT latency note: polar-orbiting sensors overfly the AOI roughly every 12h
+per instrument and FIRMS publishes NRT products with ~1–3h delay — "live"
+means latest available orbital pass, not instantaneous detection.
+
 ## Scripts
 
 - `npm run dev` — dev server (http://localhost:5173)
 - `npm run build` — typecheck + production build
 - `npm run preview` — serve the production build
 - `npm run import` — re-run the harmonized-data importer
+- `npm run update:live` — fetch latest FIRMS NRT data and rebuild products
 - `npm run data:demo` — regenerate synthetic demo products
