@@ -2,6 +2,9 @@ import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  // Relative base so the build works both at localhost:5173/ and under a
+  // GitHub Pages project path (/pyresync-app/).
+  base: './',
   plugins: [tailwindcss()],
   server: {
     port: 5173,

@@ -22,7 +22,9 @@ import type {
   SatelliteId,
 } from '../types';
 
-const DATA_BASE = '/data';
+// Relative path: resolves correctly under any deploy base (dev server,
+// GitHub Pages project subpath, custom domain).
+const DATA_BASE = 'data';
 const URLS = {
   hotspots: `${DATA_BASE}/hotspots.geojson`,
   calendar: `${DATA_BASE}/calendar.json`,
