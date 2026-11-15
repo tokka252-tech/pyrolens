@@ -1,5 +1,5 @@
 /**
- * PyreSync domain types.
+ * PyroLens domain types.
  *
  * The adapter layer normalizes heterogeneous upstream products (NASA FIRMS
  * MODIS CSV / VIIRS CSV / GeoJSON) into these canonical structures so the UI

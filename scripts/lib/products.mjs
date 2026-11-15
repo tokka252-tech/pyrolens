@@ -1,5 +1,5 @@
 /**
- * Shared product builders for the PyreSync data pipeline.
+ * Shared product builders for the PyroLens data pipeline.
  *
  * Canonical detection shape (produced by import-harmonized.mjs and
  * update-live.mjs):
@@ -62,7 +62,7 @@ export function buildHotspotsGeoJson(detections, meta = {}) {
   const lons = detections.map((d) => d.longitude);
   return {
     type: 'FeatureCollection',
-    name: 'pyresync_harmonized_hotspots',
+    name: 'pyrolens_harmonized_hotspots',
     crs: { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } },
     metadata: {
       generated_at: new Date().toISOString(),

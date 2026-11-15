@@ -1,5 +1,5 @@
 /**
- * PyreSync — Synthetic demo data generator.
+ * PyroLens — Synthetic demo data generator.
  *
  * Produces three harmonized data products under public/data/:
  *   - hotspots.geojson : point features (GeoJSON), one per fire detection
@@ -170,7 +170,7 @@ for (let i = 0; i < DETECTIONS; i++) {
 
 const hotspotsGeoJson = {
   type: 'FeatureCollection',
-  name: 'pyresync_nile_delta_hotspots',
+  name: 'pyrolens_nile_delta_hotspots',
   crs: { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } },
   metadata: {
     generated_at: new Date().toISOString(),

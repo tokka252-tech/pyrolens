@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * PyreSync — live FIRMS updater.
+ * PyroLens — live FIRMS updater.
  *
  * Fetches the latest NASA FIRMS near-real-time active-fire detections for the
  * Nile Delta bounding box and merges them into the app's data products:

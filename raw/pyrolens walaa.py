@@ -3,7 +3,7 @@ import pandas as pd        # مكتبة pandas
 import numpy as np         # مكتبة numpy
 
 print("=" * 50)
-print("PyreSync Analytics Started!")
+print("PyroLens Analytics Started!")
 print("=" * 50)
 
 # 1. Create project folders
@@ -116,7 +116,7 @@ monthly.to_json(
 
 # 13. Final results
 print("\n" + "=" * 50)
-print("PYRESYNC ANALYTICS COMPLETED")
+print("PYROLENS ANALYTICS COMPLETED")
 print("=" * 50)
 
 print("\nDatasets loaded:", len(datasets))

@@ -1,5 +1,5 @@
 /**
- * Shared utilities for the PyreSync data pipeline scripts.
+ * Shared utilities for the PyroLens data pipeline scripts.
  */
 
 /** Parse CSV text (quoted fields, CRLF/LF) into an array of records keyed by

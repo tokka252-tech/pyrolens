@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-print("PyreSync Analytics Started!")
+print("PyroLens Analytics Started!")
 
 # Create project folders if they don't exist
 Path("data").mkdir(exist_ok=True)

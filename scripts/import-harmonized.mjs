@@ -1,8 +1,8 @@
 /**
- * PyreSync — harmonized data importer.
+ * PyroLens — harmonized data importer.
  *
  * Converts a raw harmonized active-fire export (the output of the team's
- * `pyresync_walaa.py` pipeline, i.e. `output/harmonized_fires.json`, or any
+ * `pyrolens_walaa.py` pipeline, i.e. `output/harmonized_fires.json`, or any
  * JSON/CSV with equivalent columns) into the three products consumed by the
  * app's adapter layer:
  *
@@ -66,7 +66,7 @@ if (!inputPath || !existsSync(inputPath)) {
       'Expected one of:\n' +
       CANDIDATES.map((c) => `  - ${c}`).join('\n') +
       '\n\nProduce it by running the Python pipeline (requires pandas+pyarrow):\n' +
-      '  python pyresync_walaa.py\n' +
+      '  python pyrolens_walaa.py\n' +
       'which converts data/harmonized_fires.parquet -> output/harmonized_fires.json,\n' +
       'then re-run: node scripts/import-harmonized.mjs',
   );

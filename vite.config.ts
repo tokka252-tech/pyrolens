@@ -3,7 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   // Relative base so the build works both at localhost:5173/ and under a
-  // GitHub Pages project path (/pyresync-app/).
+  // GitHub Pages project path (/pyrolens-app/).
   base: './',
   plugins: [tailwindcss()],
   server: {

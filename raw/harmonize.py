@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PyreSync - Harmonization pipeline (MODIS + VIIRS -> one fire-event table)
+PyroLens - Harmonization pipeline (MODIS + VIIRS -> one fire-event table)
 
 Turns raw NASA FIRMS active-fire detections (MODIS C6.1 at ~1 km, 2000 onwards, and
 VIIRS S-NPP at ~375 m, 2012 onwards) into ONE de-duplicated, comparable record of fire
@@ -107,7 +107,7 @@ RNG_SEED = 42
 #     and if a later fetch fails the cached live data is still used.
 #   * The MAP_KEY is never printed or logged.
 # ----------------------------------------------------------------------------
-live_log = logging.getLogger("pyresync.live")
+live_log = logging.getLogger("pyrolens.live")
 
 DEFAULT_BASE_URL = "https://firms.modaps.eosdis.nasa.gov/api/area/csv"
 LIVE_SOURCES = {                      # FIRMS source name -> local cache file (note the _nrt_ in the name)
@@ -165,7 +165,7 @@ def _live_download(url, timeout, retries):
     last = "unknown error"
     for attempt in range(retries + 1):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "PyreSync/1.0"})
+            req = urllib.request.Request(url, headers={"User-Agent": "PyroLens/1.0"})
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return r.read().decode("utf-8", errors="replace")
         except urllib.error.HTTPError as e:                      # must come before URLError/OSError

@@ -1,4 +1,4 @@
-# PyreSync
+# PyroLens
 
 Scientific web platform for visualizing and analyzing active-fire detections
 from NASA FIRMS (MODIS on Aqua/Terra, VIIRS on Suomi NPP / NOAA-20) over the

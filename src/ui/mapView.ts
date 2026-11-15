@@ -184,7 +184,7 @@ export function initMap(
           fellBack[mode] = true;
           swapToFallback(mode);
           onBasemapFallback?.(mode, modes[mode].fallbackNote);
-          console.warn(`[PyreSync] ${mode} basemap fell back to ${modes[mode].fallbackNote}`);
+          console.warn(`[PyroLens] ${mode} basemap fell back to ${modes[mode].fallbackNote}`);
         }
       });
       tl.on('tileload', () => {

@@ -1,5 +1,5 @@
 /**
- * PyreSync application orchestrator (vanilla TypeScript).
+ * PyroLens application orchestrator (vanilla TypeScript).
  *
  * Owns the dataset, filter state, and cross-component wiring:
  *   sidebar filters  ->  filtered detections  ->  Leaflet markers
@@ -183,13 +183,13 @@ export async function initApp(): Promise<void> {
   const exitLiveView = () => {
     if (!liveMode) return;
     liveMode = false;
-    sessionStorage.setItem('pyresync:live', '0');
+    sessionStorage.setItem('pyrolens:live', '0');
     paintLiveBtn();
   };
 
   const setLiveMode = (on: boolean) => {
     liveMode = on;
-    sessionStorage.setItem('pyresync:live', on ? '1' : '0');
+    sessionStorage.setItem('pyrolens:live', on ? '1' : '0');
     paintLiveBtn();
     if (on) {
       const latest = latestAcqDate();
@@ -245,5 +245,5 @@ export async function initApp(): Promise<void> {
   // Initial paint — restore live mode if it was active before a refresh.
   paintLiveBtn();
   applyFilters();
-  if (sessionStorage.getItem('pyresync:live') === '1') setLiveMode(true);
+  if (sessionStorage.getItem('pyrolens:live') === '1') setLiveMode(true);
 }

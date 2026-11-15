@@ -1,5 +1,5 @@
 /**
- * PyreSync data adapter layer.
+ * PyroLens data adapter layer.
  *
  * Responsibilities:
  *  1. Fetch the three harmonized products (hotspots.geojson, calendar.json,
@@ -161,7 +161,7 @@ async function fetchJson<T>(url: string): Promise<T> {
 }
 
 /**
- * Load and normalize the full PyreSync dataset.
+ * Load and normalize the full PyroLens dataset.
  * Throws if any product fails to load — callers should surface a data-error
  * state rather than rendering partial data.
  */
